@@ -45,6 +45,31 @@ router.post('/', (req, res, next) => {
     .catch(next)
 })
 
+router.put('/:id', (req, res, next) => {
+    const { id } = req.params
+    const { name, description } = req.body
+
+    if(!name || !description) {
+        res.status(400).json({
+            message: 'missing name or description'
+        })
+    }
+
+    Project.get(id)
+    .then(project => {
+        if(!project){
+            res.status(404).json({
+                message: 'No project with that id found'})
+        } 
+
+        return Project.update(id, { name, description })
+    .then(updatedProject => {
+        res.json(updatedProject)
+    })
+    .catch(next)
+    })
+})
+
 
 
 module.exports = router;
