@@ -30,4 +30,21 @@ router.get('/:id', (req, res, next) => {
    .catch(next)
 })
 
+router.post('/', (req, res, next) => {
+    const { name, description } = req.body
+
+    if(!name || !description){
+        res.status(400).json({
+            message: 'missing name or description'})
+    }
+
+    Project.insert({ name, description })
+    .then(newProject => {
+        res.status(201).json(newProject)
+    })
+    .catch(next)
+})
+
+
+
 module.exports = router;
