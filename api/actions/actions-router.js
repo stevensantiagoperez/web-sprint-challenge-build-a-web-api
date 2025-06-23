@@ -56,6 +56,45 @@ router.post('/', async (req, res, next) =>{
     }
 })
 
+router.put('/:id', async (req, res, next) => {
+    const { id } = req.params;
+    const {project_id, description, notes } = req.body;
+
+    if(!project_id || !description || !notes) {
+        res.status(400).json({
+            message: 'missing required fields!'
+        })
+    }
+
+    try {
+        //Check if the action exists
+        const existingAction = await Action.get(id)
+        if(!existingAction) {
+            return res.status(404).json({ 
+                message: 'action not found' });
+        }
+
+        // check if project_id is valid
+        const project = await Project.get(project_id)
+        if(!project) {
+            return res.status(400).json({
+                message: 'invalid project_id' });
+        }
+
+        const updatedAction = await Action.update(
+            id,{
+            project_id,
+            description,
+            notes})
+        
+        res.status(200).json(updatedAction)
+    } catch (err) {
+        next(err)
+    }
+
+
+})
+
 
 
 
