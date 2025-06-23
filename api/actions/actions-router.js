@@ -31,6 +31,31 @@ router.get('/:id', (req, res, next)=> {
     .catch(next)
 })
 
+router.post('/', async (req, res, next) =>{
+    const {project_id, description, notes} = req.body;
+
+    if(!project_id || !description || !notes){
+        res.status(400).json({
+            message: 'missing required fields!'
+        })
+    }
+
+    try{
+        //check if project_id exists
+        const project = await Project.get(project_id)
+        if(!project){
+            return res.status(400).json({ 
+                message: 'invalid project_id' })
+        }
+
+        //insert new Action
+        const newAction = await Action.insert({project_id, description, notes})
+        res.status(201).json(newAction)
+    } catch (err){
+        next(err)
+    }
+})
+
 
 
 
