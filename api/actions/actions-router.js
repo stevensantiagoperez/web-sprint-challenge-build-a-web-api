@@ -15,6 +15,22 @@ router.get('/', (req, res, next) => {
     .catch(next)
 })
 
+router.get('/:id', (req, res, next)=> {
+    const { id } = req.params
+
+    Action.get(id)
+    .then(action => {
+        if(!action){
+            res.status(404).json({
+                message: 'there is no action with this id'
+            })
+        } else {
+            res.json(action)
+        }
+    })
+    .catch(next)
+})
+
 
 
 
