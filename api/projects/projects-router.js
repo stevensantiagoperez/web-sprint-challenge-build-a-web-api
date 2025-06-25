@@ -23,26 +23,32 @@ router.get('/:id', checkProjectIdExists, (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-    const { name, description } = req.body
+    const { name, description, completed } = req.body
 
     if(!name || !description){
-        res.status(400).json({
+        return res.status(400).json({
             message: 'missing name or description'})
     }
 
-    Project.insert({ name, description })
-    .then(newProject => {
-        res.status(201).json(newProject)
+    const newProject = {
+        name,
+        description,
+        completed: typeof completed === 'boolean' ? completed : false
+    };
+
+    Project.insert(newProject)
+    .then(created => {
+        res.status(201).json(created)
     })
     .catch(next)
 })
 
 router.put('/:id', (req, res, next) => {
     const { id } = req.params
-    const { name, description } = req.body
+    const { name, description, completed } = req.body
 
-    if(!name || !description) {
-        res.status(400).json({
+    if(!name || !description || typeof completed !== 'boolean') {
+        return res.status(400).json({
             message: 'missing name or description'
         })
     }
@@ -50,13 +56,15 @@ router.put('/:id', (req, res, next) => {
     Project.get(id)
     .then(project => {
         if(!project){
-            res.status(404).json({
+            return res.status(404).json({
                 message: 'No project with that id found'})
         } 
 
-        return Project.update(id, { name, description })
+        return Project.update(id, { name, description, completed })
     .then(updatedProject => {
-        res.json(updatedProject)
+        if(updatedProject){
+            res.json(updatedProject)
+        }
     })
     .catch(next)
     })

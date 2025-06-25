@@ -6,7 +6,8 @@ const Project = require('../projects/projects-model')
 const Action = require('./actions-model')
 
 const{
-    checkActionIdExists
+    checkActionIdExists,
+    validateActionBody,
 } = require('./actions-middleware')
 
 
@@ -60,7 +61,7 @@ router.post('/', async (req, res, next) =>{
     }
 })
 
-router.put('/:id', checkActionIdExists, async (req, res, next) => {
+router.put('/:id', checkActionIdExists, validateActionBody, async (req, res, next) => {
     try{
         const updatedAction = await Action.update(req.params.id, req.body);
         res.status(200).json(updatedAction);

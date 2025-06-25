@@ -7,7 +7,7 @@ async function checkActionIdExists(req, res, next) {
     try{
         const action = await Action.get(req.params.id)
         if(!action) {
-            return res.status(404).json({
+            return res.status(400).json({
                 message: 'action not found'
             })
         }
@@ -18,6 +18,24 @@ async function checkActionIdExists(req, res, next) {
     }
 }
 
+function validateActionBody(req, res, next) {
+  const { project_id, description, notes, completed } = req.body;
+
+  if (
+    !project_id ||
+    !description ||
+    !notes ||
+    typeof completed !== 'boolean'
+  ) {
+    return res.status(400).json({
+      message: 'missing or invalid required fields'
+    });
+  }
+
+  next();
+}
+
 module.exports = {
     checkActionIdExists,
+    validateActionBody,
 };
